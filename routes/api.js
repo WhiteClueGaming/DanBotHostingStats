@@ -29,6 +29,13 @@ Router.post("/bot/:ID/stats", /* rateLimit(10000, 2) , */ (req, res) => { // tem
             .send({error: true, message: "'bot_id' must be a snowflake"});
     }
 
+    axios.get('https://api.discordz.xyz/discord/v1/user?id=' + ID)
+  .then(function (response) {
+
+    if(!response || !response.data || !response.data["bot"] || (response.data["bot"] !== true)) return res
+            .status(400)
+            .send({error: true, message: "Bot not found"});
+    
     let data = req.body;
     let keys = db.get("apiKeys");
 
@@ -112,6 +119,9 @@ Router.post("/bot/:ID/stats", /* rateLimit(10000, 2) , */ (req, res) => { // tem
             .status(400)
             .send({error: true, message: "The API Key you gave is invalid"});
     }
+}).catch(e => {
+  return null
+})
 });
 
 Router.get("/bot/:ID/info", rateLimit(15000, 4), (req, res) => {
